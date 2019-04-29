@@ -1,0 +1,6 @@
+group "module-project-2"
+version '1.0-SNAPSHOT'
+
+dependencies {
+    compile project(":module-project-1")
+}

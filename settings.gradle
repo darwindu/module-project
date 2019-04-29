@@ -1,0 +1,6 @@
+rootProject.name = 'module-project'
+include 'module-project-1'
+include 'module-project-2'
+
+//include 'core','web'gra
+

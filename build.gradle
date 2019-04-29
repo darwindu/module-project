@@ -1,0 +1,106 @@
+group "module-project"
+version "0.1.1"
+
+List lombok = [
+        "org.projectlombok:lombok:1.16.14"
+]
+
+List junit = [
+        "junit:junit:4.12",
+]
+
+allprojects {
+
+    apply plugin: 'maven'
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+
+    // Specify JDK version - may vary in different scenarios
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+    // In this section you declare where to find the dependencies of your project
+    repositories {
+        maven {
+            url "http://maven.aliyun.com/nexus/content/groups/public/"
+        }
+        mavenLocal()
+        mavenCentral()
+    }
+
+    dependencies {
+        compile lombok
+        testCompile junit
+    }
+
+    sourceSets {
+        main {
+            java {
+                srcDirs = ['src/main/java']
+            }
+            resources {
+                srcDirs = ['src/main/resources']
+            }
+        }
+        test {
+            java {
+                srcDirs = ['src/test/java']
+            }
+            resources {
+                srcDirs = ['src/test/resources']
+            }
+        }
+    }
+    //输入命令：gradle -q hello
+    task hello {
+        doLast { task ->
+            println "I'm $task.project.name"
+            println "I'm $task.project.version"
+        }
+    }
+
+    jar {
+
+        destinationDir file('dist/app')
+
+        doLast {
+            archiveName project.name + '-' + version + '.jar'
+            exclude '**/*.xml'
+            exclude '**/*.properties'
+
+            copy {
+                from file('src/main/resources/')
+                into 'dist/conf'
+            }
+            copy {
+                from configurations.runtime
+                into 'dist/lib'
+            }
+            copy {
+                from file('.').listFiles().findAll { File f -> (f.name.endsWith('.bat') || f.name.endsWith('.sh') || f.name.endsWith('.env')) }
+                into 'dist'
+            }
+        }
+    }
+
+}
+// 所有子项目的通用配置
+subprojects {
+
+    hello {
+        doLast {
+            println "- I depend on water"
+            println "I'm $project.version"
+        }
+    }
+
+    dependencies {
+        // 通用依赖
+        //compile lombok
+
+        // 测试依赖
+        //testCompile junit
+    }
+}
